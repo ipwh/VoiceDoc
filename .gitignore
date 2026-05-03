@@ -1,0 +1,196 @@
+# =========================================================
+# VoiceDoc AI - .gitignore
+# =========================================================
+
+# ---------------------------------------------------------
+# 1) Python cache / build
+# ---------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+build/
+dist/
+site/
+.eggs/
+*.egg
+*.egg-info/
+pip-wheel-metadata/
+
+# ---------------------------------------------------------
+# 2) Virtual environments
+# ---------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+
+# Local venv root used by VoiceDoc setup.bat
+VoiceDoc_env/
+VoiceDoc_env/**
+
+# ---------------------------------------------------------
+# 3) Secrets / environment files
+# ---------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# API / local machine config copies
+*.secret
+*.secrets
+*.key
+*.pem
+
+# ---------------------------------------------------------
+# 4) Local app data / private data
+# ---------------------------------------------------------
+.voicedoc/
+.voicedoc/**
+
+privacy_audit.log
+*.keystore.enc
+.keystore.enc
+
+# ---------------------------------------------------------
+# 5) Whisper / HuggingFace / model cache
+# ---------------------------------------------------------
+whisper_models/
+whisper_models/**
+
+.cache/
+.cache/**
+
+# If someone accidentally creates local model/cache folders in project
+models/
+models/**
+hf_cache/
+hf_cache/**
+huggingface/
+huggingface/**
+
+# ---------------------------------------------------------
+# 6) Temporary audio / processing outputs
+# ---------------------------------------------------------
+tmp/
+tmp/**
+temp/
+temp/**
+temps/
+temps/**
+uploads/
+uploads/**
+downloads/
+downloads/**
+checkpoints/
+checkpoints/**
+
+# Common generated media/temp files
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.aac
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Optional transcript export artifacts if you do not want generated files tracked
+# Uncomment if needed:
+# *.srt
+# *.docx
+# *.txt
+# *.pdf
+
+# ---------------------------------------------------------
+# 7) Logs / runtime files
+# ---------------------------------------------------------
+*.log
+logs/
+logs/**
+*.pid
+*.seed
+*.out
+*.err
+
+# ---------------------------------------------------------
+# 8) Jupyter / test / coverage
+# ---------------------------------------------------------
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ---------------------------------------------------------
+# 9) IDE / editor files
+# ---------------------------------------------------------
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------
+# 10) OS files
+# ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------
+# 11) Streamlit runtime leftovers
+# ---------------------------------------------------------
+.streamlit/cache/
+.streamlit/history/
+
+# Keep config if you store project config here
+!.streamlit/config.toml
+
+# ---------------------------------------------------------
+# 12) Local path markers / machine-specific files
+# ---------------------------------------------------------
+venv_path.txt
+
+# If you want to keep venv_path.txt in repo, comment the line above.
+# Current recommendation: ignore it because it is machine-specific.
+
+# ---------------------------------------------------------
+# 13) Backup / old copies
+# ---------------------------------------------------------
+*.bak
+*.tmp
+*.old
+*.orig
+*_backup.py
+*-backup.py
+
+# ---------------------------------------------------------
+# 14) Keep important project data tracked
+# ---------------------------------------------------------
+# Do NOT ignore these if you want them version-controlled:
+# data/
+# requirements.txt
+# README.md
+# pages/
+# services/
+# core/
+# ui/
