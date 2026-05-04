@@ -1,0 +1,6 @@
+VoiceDoc AI uses the following open-source components:
+- faster-whisper (MIT) — https://github.com/SYSTRAN/faster-whisper
+- Streamlit (Apache 2.0) — https://github.com/streamlit/streamlit
+- pydub (MIT) — https://github.com/jiaaro/pydub
+- python-docx (MIT) — https://github.com/python-openxml/python-docx
+- pypdf (BSD) — https://github.com/py-pdf/pypdf
