@@ -1,5 +1,5 @@
 """
-ui/layout.py — VoiceDoc AI v4.8
+ui/layout.py — VoiceDoc AI v4.7
 對應 page1 全自動科組詞庫閉環版
 
 重點：
@@ -120,7 +120,7 @@ def render_sidebar() -> dict:
 
     with st.sidebar:
         st.markdown("### 🎙 VoiceDoc AI")
-        st.caption("v4.8 · 香港學校會議紀錄")
+        st.caption("v4.7 · 香港學校會議紀錄")
         st.divider()
 
         with st.expander("🤖 AI 設定", expanded=False):
