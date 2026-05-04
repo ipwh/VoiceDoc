@@ -164,6 +164,7 @@ ss.setdefault("tab2_effective_terms", [])
 ss.setdefault("tab2_initial_prompt", "")
 ss.setdefault("tab2_generating_minutes", False)
 ss.setdefault("_minutes_error_tab2", None)
+ss.setdefault("_cfg", {})
 
 ss.setdefault("tab2_transcript_uploader_nonce", 0)
 ss.setdefault("tab2_ctx_uploader_nonce", 0)
@@ -346,22 +347,28 @@ has_transcript = bool(ss.get("tab2_transcript_text"))
 has_context = bool(ss.get("tab2_context_text"))
 has_agenda = bool(ss.get("tab2_agenda_text"))
 
+# 先取得並設定詳細程度，再顯示 metrics
+detail_options = ["簡略", "標準", "詳盡"]
+current_detail = ss.get("_cfg", {}).get("detail_level", "標準")
+
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("逐字稿", "已載入" if has_transcript else "未載入")
 c2.metric("情境文件", "已加入" if has_context else "未加入")
 c3.metric("會議議程", "已加入" if has_agenda else "未加入")
-c4.metric("詳盡程度", ss.get("_cfg", {}).get("detail_level", "標準"))
+c4.metric("詳盡程度", current_detail)
 
 st.divider()
 step_hdr("tab2_generate", "步驟③ AI 生成會議紀錄")
 
-detail_options = ["簡略", "標準", "詳盡"]
-current_detail = ss.get("_cfg", {}).get("detail_level", "標準")
+def _update_detail_level():
+    ss["_cfg"]["detail_level"] = ss.get("tab2_detail_slider", "標準")
+
 picked_detail = st.select_slider(
     "AI 生成會議紀錄詳細程度",
     options=detail_options,
     value=current_detail if current_detail in detail_options else "標準",
     key="tab2_detail_slider",
+    on_change=_update_detail_level,
     help="簡略：重點摘要；標準：一般會議建議；詳盡：較完整記錄討論內容與跟進事項。",
 )
 ss["_cfg"]["detail_level"] = picked_detail
