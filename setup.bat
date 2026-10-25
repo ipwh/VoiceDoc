@@ -1,63 +1,43 @@
 @echo off
 chcp 65001 >nul
-setlocal
-
 echo ==========================================
 echo VoiceDoc AI - Setup (First Time Install)
 echo ==========================================
 echo.
 
-REM =========================================================
-REM Local folders under user profile (NOT inside sync folder)
-REM =========================================================
-set "APP_ROOT=%USERPROFILE%\VoiceDoc_env"
-set "VENV_ROOT=%APP_ROOT%"
+set "VENV_ROOT=%USERPROFILE%\VoiceDoc_env"
 set "VENV_PATH=%VENV_ROOT%\venv"
-set "MODEL_ROOT=%APP_ROOT%\whisper_models"
 
 echo Windows user folder : %USERPROFILE%
-echo Local app root      : %APP_ROOT%
-echo venv path           : %VENV_PATH%
-echo Whisper model path  : %MODEL_ROOT%
+echo venv will be at     : %VENV_PATH%
 echo Code folder         : %~dp0
 echo.
-echo NOTE:
-echo - venv and Whisper models will stay on this PC only
-echo - they will NOT be stored inside OneDrive / synced project folder
-echo - each computer must run setup.bat once
+echo NOTE: venv is local to this PC and will NOT sync to OneDrive.
+echo Each computer must run setup.bat once.
 echo.
 pause
 
-REM =========================================================
-REM Check Python
-REM =========================================================
+REM -- Check Python --
 python --version >nul 2>&1
 if errorlevel 1 (
     echo ERROR: Python not found.
-    echo Please install Python 3.10 or 3.11 first:
-    echo https://www.python.org/downloads/
+    echo Install from https://www.python.org/downloads/
+    echo Make sure to check "Add Python to PATH" during install.
     pause
     exit /b 1
 )
-
-echo Python detected:
 python --version
 echo.
 
-REM =========================================================
-REM Ensure local folders exist
-REM =========================================================
-if not exist "%APP_ROOT%" mkdir "%APP_ROOT%"
-if not exist "%MODEL_ROOT%" mkdir "%MODEL_ROOT%"
-
-REM =========================================================
-REM Step 1 - Create venv
-REM =========================================================
+REM --------------------------------------------------
+REM  Step 1/6 : Create venv
+REM --------------------------------------------------
 if not exist "%VENV_PATH%\Scripts\activate.bat" (
-    echo [1/6] Creating virtual environment...
+    echo [1/6] Creating venv at %VENV_PATH% ...
+    if not exist "%VENV_ROOT%" mkdir "%VENV_ROOT%"
     python -m venv "%VENV_PATH%"
     if errorlevel 1 (
-        echo ERROR: Failed to create virtual environment.
+        echo ERROR: venv creation failed.
         pause
         exit /b 1
     )
@@ -67,10 +47,9 @@ if not exist "%VENV_PATH%\Scripts\activate.bat" (
 )
 echo.
 
-REM =========================================================
-REM Step 2 - Activate venv
-REM =========================================================
-echo [2/6] Activating virtual environment...
+REM --------------------------------------------------
+REM  Step 2/6 : Activate venv
+REM --------------------------------------------------
 call "%VENV_PATH%\Scripts\activate.bat"
 if errorlevel 1 (
     echo ERROR: Cannot activate venv.
@@ -80,100 +59,113 @@ if errorlevel 1 (
 echo OK: venv activated.
 echo.
 
-REM =========================================================
-REM Step 3 - Upgrade pip
-REM =========================================================
-echo [3/6] Upgrading pip...
-python -m pip install --upgrade pip
-if errorlevel 1 (
-    echo WARNING: pip upgrade may not have completed successfully.
-)
+REM --------------------------------------------------
+REM  Step 3/6 : Upgrade pip
+REM --------------------------------------------------
+echo [2/6] Upgrading pip...
+python -m pip install --upgrade pip --quiet
+echo OK: pip upgraded.
 echo.
 
-REM =========================================================
-REM Step 4 - Install requirements
-REM =========================================================
-echo [4/6] Installing packages from requirements.txt ...
-echo First run may take 5-15 minutes.
+REM --------------------------------------------------
+REM  Step 4/6 : Install packages
+REM --------------------------------------------------
+echo [3/6] Installing packages from requirements.txt ...
+echo (First run may take 5-15 minutes)
 if not exist "%~dp0requirements.txt" (
-    echo ERROR: requirements.txt not found at:
-    echo %~dp0requirements.txt
+    echo ERROR: requirements.txt not found at %~dp0
     pause
     exit /b 1
 )
-
 pip install -r "%~dp0requirements.txt"
 if errorlevel 1 (
-    echo ERROR: Package installation failed.
-    echo Please review the error messages above.
+    echo ERROR: Package install failed. Check the error above.
     pause
     exit /b 1
 )
-echo OK: Packages installed.
+echo OK: All packages installed.
 echo.
 
-REM =========================================================
-REM Step 5 - Verify critical packages
-REM =========================================================
-echo [5/6] Verifying critical packages...
-python -c "import faster_whisper, streamlit, pydub, soundfile, scipy, docx, pypdf; from dotenv import load_dotenv; print('OK: critical packages verified.')"
+REM --------------------------------------------------
+REM  Step 5/6 : Verify critical packages
+REM --------------------------------------------------
+echo [4/6] Verifying critical packages...
+python -c "import faster_whisper; import streamlit; import pydub; import soundfile; import scipy; import docx; import pypdf; from dotenv import load_dotenv; print('OK: All critical packages verified.')"
 if errorlevel 1 (
-    echo WARNING: Some critical packages may be missing.
-    echo Try: pip install -r requirements.txt
+    echo WARNING: Some packages may not be installed correctly.
+    echo Run: pip install -r requirements.txt
 )
 echo.
 
-REM =========================================================
-REM Step 6 - Check FFmpeg
-REM =========================================================
-echo [6/6] Checking FFmpeg...
+REM --------------------------------------------------
+REM  Step 5/6 : Check FFmpeg
+REM --------------------------------------------------
+echo [5/6] Checking FFmpeg...
 ffmpeg -version >nul 2>&1
 if errorlevel 1 (
-    echo WARNING: FFmpeg not found.
-    echo Download from: https://ffmpeg.org/download.html
-    echo Then add ffmpeg\bin to PATH.
+    echo WARNING: FFmpeg not found in PATH.
+    echo.
+    echo HOW TO INSTALL FFMPEG:
+    echo   1. Go to https://www.gyan.dev/ffmpeg/builds/
+    echo   2. Download ffmpeg-release-essentials.zip
+    echo   3. Extract to C:\ffmpeg\
+    echo   4. Add C:\ffmpeg\bin to system PATH:
+    echo      - Press Win+S, search "Environment Variables"
+    echo      - Under System Variables, select Path, click Edit
+    echo      - Click New, enter: C:\ffmpeg\bin
+    echo      - Click OK to close all windows
+    echo   5. Verify: open a new cmd window and run "ffmpeg -version"
+    echo.
 ) else (
     echo OK: FFmpeg found.
 )
 echo.
 
-REM =========================================================
-REM Create / update .env
-REM =========================================================
+REM --------------------------------------------------
+REM  Step 6/6 : Create config files
+REM --------------------------------------------------
+echo [6/6] Creating config files...
+
+REM -- .env --
 if not exist "%~dp0.env" (
     echo INFO: Creating .env template...
-    (
-        echo DEEPSEEK_API_KEY=sk-put-your-key-here
-        echo XAI_API_KEY=
-        echo OPENAI_API_KEY=
-        echo VOICEDOC_LOW_MEMORY=false
-        echo DEFAULT_WHISPER_MODEL=medium
-        echo DEFAULT_LANGUAGE=yue
-        echo VOICEDOC_MODEL_DIR=%MODEL_ROOT%
-        echo WHISPER_MODEL_DIR=%MODEL_ROOT%
-        echo HF_HOME=%MODEL_ROOT%
-        echo XDG_CACHE_HOME=%MODEL_ROOT%
-        echo TRANSFORMERS_CACHE=%MODEL_ROOT%
-        echo VOICEDOC_FORCE_CPU=true
-    ) > "%~dp0.env"
-    echo OK: .env created.
+    echo DEEPSEEK_API_KEY=sk-put-your-key-here>"%~dp0.env"
+    echo XAI_API_KEY=>>"%~dp0.env"
+    echo OPENAI_API_KEY=>>"%~dp0.env"
+    echo VOICEDOC_LOW_MEMORY=false>>"%~dp0.env"
+    echo DEFAULT_WHISPER_MODEL=medium>>"%~dp0.env"
+    echo DEFAULT_LANGUAGE=yue>>"%~dp0.env"
+    echo OK: .env created. Open with Notepad and fill in your API Keys.
 ) else (
-    echo INFO: .env already exists.
-    echo INFO: Existing .env kept unchanged.
-    echo.
-    echo Please confirm these values exist in .env:
-    echo VOICEDOC_MODEL_DIR=%MODEL_ROOT%
-    echo WHISPER_MODEL_DIR=%MODEL_ROOT%
-    echo HF_HOME=%MODEL_ROOT%
-    echo XDG_CACHE_HOME=%MODEL_ROOT%
-    echo TRANSFORMERS_CACHE=%MODEL_ROOT%
-    echo VOICEDOC_FORCE_CPU=true
+    echo OK: .env already exists.
 )
 echo.
 
-REM =========================================================
-REM Save default venv marker for run.bat
-REM =========================================================
+echo HF_HUB_DISABLE_SYMLINKS_WARNING=1>>"%~dp0.env"
+echo PYTHONIOENCODING=utf-8>>"%~dp0.env"
+
+REM -- .streamlit\config.toml --
+REM toolbarMode=minimal stops Streamlit from intercepting Ctrl+C
+REM and removes the Clear Cache popup when user tries to copy text.
+if not exist "%~dp0.streamlit" mkdir "%~dp0.streamlit"
+if not exist "%~dp0.streamlit\config.toml" (
+    echo INFO: Creating .streamlit\config.toml ...
+    echo [global]>"%~dp0.streamlit\config.toml"
+    echo toolbarMode = "minimal">>"%~dp0.streamlit\config.toml"
+    echo.>>"%~dp0.streamlit\config.toml"
+    echo [server]>>"%~dp0.streamlit\config.toml"
+    echo headless = true>>"%~dp0.streamlit\config.toml"
+    echo port = 8501>>"%~dp0.streamlit\config.toml"
+    echo.>>"%~dp0.streamlit\config.toml"
+    echo [browser]>>"%~dp0.streamlit\config.toml"
+    echo gatherUsageStats = false>>"%~dp0.streamlit\config.toml"
+    echo OK: config.toml created.
+) else (
+    echo OK: .streamlit\config.toml already exists.
+)
+echo.
+
+REM -- venv marker for run.bat --
 echo DEFAULT>"%~dp0venv_path.txt"
 echo OK: venv_path.txt updated.
 echo.
@@ -181,18 +173,16 @@ echo.
 echo ==========================================
 echo Setup COMPLETE!
 echo.
-echo venv path          : %VENV_PATH%
-echo Whisper model path : %MODEL_ROOT%
+echo venv   : %VENV_PATH%
+echo config : %~dp0.streamlit\config.toml
 echo.
 echo Next steps:
-echo 1. Open .env and fill in API key if needed
-echo 2. Double-click run.bat
-echo 3. Open browser at http://localhost:8501
+echo   1. Open .env with Notepad and fill in API Key(s)
+echo   2. Double-click run.bat to start VoiceDoc AI
+echo   3. Open browser at http://localhost:8501
+echo   4. Check page 5 (System Health Check)
 echo.
-echo First model download will happen when Whisper runs for the first time.
-echo After that, models stay in:
-echo %MODEL_ROOT%
+echo New computer? Just run setup.bat again.
 echo ==========================================
 echo.
 pause
-endlocal

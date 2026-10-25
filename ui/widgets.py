@@ -140,6 +140,13 @@ def render_transcript_editor(transcript: dict, key_prefix: str = "") -> dict:
     st.caption("可在此修正 AI 轉錄錯誤的詞語，修正後再生成會議紀錄，效果更準確。")
 
     PAGE_SIZE   = 20
+    # Ensure segs is never None (handle cases where it might become None during rerun)
+    if ss.get(edit_key) is None:
+        ss[edit_key] = [
+            {"start": s["start"], "end": s["end"],
+             "text": s["text"], "speaker": s.get("speaker", "")}
+            for s in (transcript.get("segments", []) if transcript else [])
+        ]
     segs        = ss[edit_key]
     total_pages = max(1, (len(segs) + PAGE_SIZE - 1) // PAGE_SIZE)
     edit_page_key = f"{key_prefix}_edit_page"

@@ -98,6 +98,9 @@ echo.
 
 streamlit run Home.py --server.headless false --browser.gatherUsageStats false
 
+set PYTHONIOENCODING=utf-8
+set PYTHONLEGACYWINDOWSSTDIO=0
+
 echo.
 echo Stopped.
 pause

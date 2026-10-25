@@ -1,5 +1,5 @@
 """
-Home.py — VoiceDoc AI 主頁 v4.6
+Home.py — VoiceDoc AI 主頁 v4.7
 結構：
 1. 後台預載 Whisper 模型（靜默，不顯示訊息）
 2. 標題
@@ -33,7 +33,7 @@ if not st.session_state.get("_model_warmed_up"):
 
 render_header(
     "🎙️ VoiceDoc AI",
-    "香港學校會議語音轉錄、詞庫管理與 AI 會議紀錄生成系統 v4.6"
+    "香港學校會議語音轉錄、詞庫管理與 AI 會議紀錄生成系統 v4.7"
 )
 
 st.divider()
