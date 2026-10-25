@@ -1,4 +1,4 @@
-# VoiceDoc AI 🎙️
+﻿# VoiceDoc AI 🎙️
 **香港學校會議語音轉錄、詞庫管理與 AI 會議紀錄生成系統**
 
 版本：v4.7 · 更新日期：2026-05-04
@@ -89,36 +89,103 @@ VoiceDoc AI 專為香港學校場景設計，支援將會議錄音或現有逐�
 
 ## 安裝步驟
 
-### 第一次安裝（每部電腦只做一次）
+### 首次安裝（每台電腦只需做一次）
 
-1. 先裝好 Python（版本 3.10 或 3.11）。
-2. 先裝好 FFmpeg，並把 `C:\ffmpeg\bin` 加到系統 Path。
-3. 在這個專案資料夾中，雙擊 `setup.bat`。
-4. （非必要）打開 `.env`，貼上你的 API Key。
+**1. 安裝 Python 3.10 或 3.11**
 
-### 直接複製這些指令檢查
+- 下載：[Python 官網](https://www.python.org/downloads/)
+- 安裝時務必勾選 **Add Python to PATH**
+- 安裝完成後，可在命令提示字元輸入以下指令確認：
 
-開啟命令提示字元（cmd），逐行逐次貼上：
-
+```text
 python --version
 pip --version
+```
+
+若能顯示版本號，代表 Python 已可正常使用。
+
+---
+
+**2. 安裝 FFmpeg**
+
+FFmpeg 是本系統處理音訊格式轉換的核心工具，必須正確安裝並加入系統 PATH 才能使用轉錄功能。
+
+#### 步驟一：下載 FFmpeg
+
+1. 前往 https://www.gyan.dev/ffmpeg/builds/
+2. 在 **release builds** 區域，下載 `ffmpeg-release-essentials.zip`
+
+> 或直接前往 https://ffmpeg.org/download.html，選擇 **Windows** → **Windows builds from gyan.dev**。
+
+#### 步驟二：解壓縮
+
+1. 將下載的 `.zip` 檔案解壓縮
+2. 建議解壓到一個**不會移動的固定位置**，例如：
+
+```text
+C:\ffmpeg\
+```
+
+3. 解壓後的資料夾結構應如下：
+
+```text
+C:\ffmpeg\
+├── bin\
+│   ├── ffmpeg.exe
+│   ├── ffplay.exe
+│   └── ffprobe.exe
+├── doc\
+└── presets\
+```
+
+#### 步驟三：將 FFmpeg 加入系統 PATH
+
+1. 按下 `Win + S`，搜尋「**環境變數**」，點選「**編輯系統環境變數**」
+2. 在「系統內容」視窗中，點擊右下角「**環境變數(N)...**」
+3. 在「**系統變數**」區域（下半部），找到名為 `Path` 的變數，雙擊開啟
+4. 點擊「**新增**」，輸入 FFmpeg 的 `bin` 資料夾完整路徑：
+
+```text
+C:\ffmpeg\bin
+```
+
+5. 連續點擊「確定」關閉所有視窗
+
+#### 步驟四：驗證安裝
+
+1. 按下 `Win + R`，輸入 `cmd`，按 Enter 開啟命令提示字元
+2. 輸入以下指令：
+
+```text
 ffmpeg -version
+```
 
+3. 若安裝成功，應看到類似以下輸出：
 
-如果三行都有顯示版本號，就可以繼續。
+```text
+ffmpeg version 7.x.x Copyright (c) 2000-2024 the FFmpeg developers
+built with gcc ...
+```
 
-### 執行安裝
+> **注意：**
+> - 若顯示「`ffmpeg` 不是內部或外部命令」，表示 PATH 未正確設定，請重新檢查步驟三。
+> - 修改 PATH 後需要**重新開啟**命令提示字元才會生效。
+> - 若電腦同時裝有其他版本的 FFmpeg（例如透過 Chocolatey 安裝），請確保 `C:\ffmpeg\bin` 排列在 PATH 的**較前位置**，避免版本衝突。
 
-在專案資料夾內，執行：
+---
 
-setup.bat
+**3. 執行 `setup.bat`**
 
+- 自動建立本機虛擬環境：`C:\Users\你的名字\VoiceDoc_env\venv`
+- 自動建立 Whisper 模型目錄：`C:\Users\你的名字\VoiceDoc_env\whisper_models`
+- 自動安裝 `requirements.txt` 內的依賴套件
+- 自動建立 `.env` 範本及 `venv_path.txt`
 
-安裝完成後，會自動幫你準備好執行環境。
+---
 
-（非必要）### 填寫 `.env`
+**4. 編輯 `.env`**
 
-把以下內容貼到 `.env`（把金鑰填在等號後面）：
+填入你的 API Key，可保留以下預設值：
 
 ```text
 DEFAULT_WHISPER_MODEL=medium
@@ -131,11 +198,15 @@ OPENAI_API_KEY=
 XAI_API_KEY=
 ```
 
-### API Key 申請網址
+---
 
-- DeepSeek: https://platform.deepseek.com
-- Grok (xAI): https://console.x.ai
-- OpenAI: https://platform.openai.com
+### API Key 申請
+
+| 供應商 | 申請網址 | 費用 |
+|--------|---------|------|
+| DeepSeek | https://platform.deepseek.com | 低成本 |
+| Grok (xAI) | https://console.x.ai | 低成本 |
+| OpenAI GPT-4o | https://platform.openai.com | 較高 |
 
 ---
 
@@ -163,6 +234,7 @@ XAI_API_KEY=
 2. 上傳語音檔，系統會先轉換格式、估算時長，再進行降噪處理。
 3. 按需要加入情境文件、議程或手動詞彙，然後開始轉錄。
 4. 轉錄完成後可檢視逐字稿並修正內容，再生成會議紀錄。
+4. 轉錄完成後可檢視逐字稿、修正內容，再生成會議紀錄。
 5. 生成結果可下載或儲存到歷史記錄。
 
 ### 2. 匯入逐字稿生成會議紀錄
@@ -192,6 +264,7 @@ Sidebar 已整合為 v4.7 配置模式，採用 `_cfg` 狀態保存機制，切�
 - AI 供應商
 - API Key
 - 自定義 OpenAI 相容 Base URL / Model
+- 本地 / 雲端模式提示
 - 本地 / 雲端模式提示。
 
 ### 📋 會議資訊
@@ -416,6 +489,7 @@ A：語音轉錄頁含有疑似亂碼 / 幻覺片段過濾邏輯，會自動移�
 **Q5. 舊電腦很慢，應該怎樣選模型？**
 A：可先用 `small`；若準確度不足、術語較多，再改用 `medium` 或 `large-v3` 重試。
 
+**Q6. 為什麼系統健康檢查顯示某些套件為可選？**
 **Q6. 為什麼系統健康檢查顯示某些套件為可選？**  
 A：像 `cryptography`、`deepfilternet`、`openai` 都屬增強功能，缺少時只會影響特定附加能力，不會令整個系統完全不能用。
 
